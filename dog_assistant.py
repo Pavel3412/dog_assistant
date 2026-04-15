@@ -1,6 +1,8 @@
 ''' Консольный помощник для владельцев собак,
 Учебный проект по Python
-Версия 0.3'''
+Версия 0.3.2'''
+
+import datetime
 
 # Приветствие
 print("Привет, хозяин! ❤️")
@@ -24,7 +26,7 @@ while True:
     else:
         print('Введите корректное число!')
 
-
+walks = []
         
 while True:
     dog_weight = input("Сколько она весит: ")
@@ -55,6 +57,8 @@ while True:
                 break
         else:
             print('Категория введена неверно!')
+    else:
+        break
 
 
 
@@ -80,6 +84,57 @@ else:
 # Вывод информации 
 print(f'Рекомендация для породы {dog_breed}: {recomendations}')
 print(f'Привет, {owner_name}. Меня зовут {dog_name}, порода - {dog_breed}. Мне {str(dog_age)} {year}, но на человеческие мне уже {human_age}. Я вешу {dog_weight} кг.')
+
+while True:
+    print("\n--- МЕНЮ ---")
+    print('1. Записать прогулку')
+    print('2. Показать историю прогулок')
+    print('3. Выйти')
+    choice = input('Выберите пункт из меню: ')
+    if choice == '1':
+        date = datetime.date.today().strftime("%d.%m.%Y")
+        while True:
+            time = input('Введите длительность прогулки в минутах: ')
+            if time.isdigit():
+                time = int(time)
+                break
+            else:
+                print('Введите корректрое число')
+        comment = input('Введите комментарий (можно оставить пустым): ')
+        
+        while True:
+            mood = input("Оцените настроение собаки от 1 до 5: ")
+            if mood.isdigit():
+                mood = int(mood)
+                if 1 <= mood <= 5:
+                    
+                    break
+                else:
+                    print('Ошибка! Введите число от 1 до 5')
+            else:
+                print('Введите число!')
+        
+        walk = {
+            "date": date,
+            "duration": time,
+            "comment": comment,
+            "mood": mood
+        }
+        walks.append(walk)
+        print("Прогулка записана.")
+    
+    elif choice == '2':
+        if walks == []:
+            print('История пуста.')
+        else:
+            for walk in walks:
+                print(f"{walk['date']} | {walk['duration']} мин | Настроение: {walk['mood']}/5 | {walk['comment']}")
+                
+    elif choice == '3':
+        print("До свидания!")
+        break
+    else:
+        print("Неверный пункт, введите 1-3")
 
 
 # Отладка типов
