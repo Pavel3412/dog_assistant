@@ -6,86 +6,90 @@ import datetime
 import json
 import os
 
+def input_positive_number(prompt, error, allow_float=True, min_value=0.001):
+    while True:
+        user_input = input(prompt)
+
+        if allow_float:
+            if user_input.replace('.','',1).isdigit():
+                user_input = float(user_input)
+                if user_input <= min_value:
+                    print(error)
+                else:
+                    return user_input
+            else:
+                print('Введите корректрое число')
+        else:
+            if user_input.isdigit():
+                user_input = int(user_input)
+                if user_input <= min_value:
+                    print(error)
+                else:
+                    return user_input
+            else:
+                print('Введите корректрое число')
+        
+
 # Приветствие
 print("Привет, хозяин! ❤️")
 
-# # Породы собак
-# active_breeds = ["хаски", "джек-рассел-терьер", "бордер-колли", "лабрадор", "акита-ину", "сиба-ину"]
-# calm_breeds = ["мопс", "английский бульдог", "бассет-хаунд", "ши-тцу", "французский бульдог"]
+# Породы собак
+active_breeds = ["хаски", "джек-рассел-терьер", "бордер-колли", "лабрадор", "акита-ину", "сиба-ину"]
+calm_breeds = ["мопс", "английский бульдог", "бассет-хаунд", "ши-тцу", "французский бульдог"]
 
-# # Ввод данных
-# owner_name = input('Как вас зовут:')
-# dog_name = input("Какая кличка у собаки: ")
-# while True:
-#     dog_age = input("Сколько ей лет: ")
+# Ввод данных
+owner_name = input('Как вас зовут:')
+dog_name = input("Какая кличка у собаки: ")
 
-#     if dog_age.replace('.','',1).isdigit():
-#         dog_age = float(dog_age)
-#         if dog_age <= 0:
-#             print('Возраст не может быть отрицательным или равным 0!')
-#         else:
-#             break
-#     else:
-#         print('Введите корректное число!')
 
-# 
+dog_age = input_positive_number('Сколько ей лет: ', 'Возраст не может быть отрицательным или равным 0!', allow_float=True)
         
-# while True:
-#     dog_weight = input("Сколько она весит: ")
-
-#     if dog_weight.replace('.','',1).isdigit():
-#         dog_weight = float(dog_weight)
-#         if dog_weight <= 0:
-#             print('Вес не может быть отрицательным или равен 0!')
-#         else:
-#             break
-#     else:
-#         print('Введите корректное число!')
+dog_weight = input_positive_number("Сколько она весит: ",'Вес не может быть отрицательным или равен 0!', allow_float=True )
 
 
-# dog_breed = input("Какой она породы: ")
-# lower_dog_breed = dog_breed.lower()
-# while True:
-#     if lower_dog_breed not in active_breeds and lower_dog_breed not in calm_breeds:
-#         confirm = input('К сожалению, вашей породы нет в списке. К какой категории относится ваша порода? активная, стандартная, спокойная?')
-#         if confirm == 'активная' or confirm == 'спокойная' or confirm == 'стандартная':
-#             if confirm == 'активная':
-#                 active_breeds.append(lower_dog_breed)
-#                 break
-#             elif confirm == 'спокойная':
-#                 calm_breeds.append(lower_dog_breed)
-#                 break
-#             else:
-#                 break
-#         else:
-#             print('Категория введена неверно!')
-#     else:
-#         break
+dog_breed = input("Какой она породы: ")
+lower_dog_breed = dog_breed.lower()
+while True:
+    if lower_dog_breed not in active_breeds and lower_dog_breed not in calm_breeds:
+        confirm = input('К сожалению, вашей породы нет в списке. К какой категории относится ваша порода? активная, стандартная, спокойная?')
+        if confirm == 'активная' or confirm == 'спокойная' or confirm == 'стандартная':
+            if confirm == 'активная':
+                active_breeds.append(lower_dog_breed)
+                break
+            elif confirm == 'спокойная':
+                calm_breeds.append(lower_dog_breed)
+                break
+            else:
+                break
+        else:
+            print('Категория введена неверно!')
+    else:
+        break
 
 
 
-# human_age = dog_age * 7
+human_age = dog_age * 7
 
-# if 11 <= dog_age <=19:
-#     year = 'лет'
-# elif dog_age % 10 == 1:
-#     year = 'год'
-# elif 2 <= dog_age % 10 <= 4:
-#     year = 'года'
-# else:
-#     year = 'лет'
+if 11 <= dog_age <=19:
+    year = 'лет'
+elif dog_age % 10 == 1:
+    year = 'год'
+elif 2 <= dog_age % 10 <= 4:
+    year = 'года'
+else:
+    year = 'лет'
 
-# if lower_dog_breed in active_breeds:
-#     recomendations = 'Активный выгул от 2-х часов в день'
-# elif lower_dog_breed in calm_breeds:
-#     recomendations = 'Спокойные прогулки по 30-40 минут'
-# else:
-#     recomendations = 'Стандартный выгул 1ч - 1.5ч'
+if lower_dog_breed in active_breeds:
+    recomendations = 'Активный выгул от 2-х часов в день'
+elif lower_dog_breed in calm_breeds:
+    recomendations = 'Спокойные прогулки по 30-40 минут'
+else:
+    recomendations = 'Стандартный выгул 1ч - 1.5ч'
 
 
-# # Вывод информации 
-# print(f'Рекомендация для породы {dog_breed}: {recomendations}')
-# print(f'Привет, {owner_name}. Меня зовут {dog_name}, порода - {dog_breed}. Мне {str(dog_age)} {year}, но на человеческие мне уже {human_age}. Я вешу {dog_weight} кг.')
+# Вывод информации 
+print(f'Рекомендация для породы {dog_breed}: {recomendations}')
+print(f'Привет, {owner_name}. Меня зовут {dog_name}, порода - {dog_breed}. Мне {str(dog_age)} {year}, но на человеческие мне уже {human_age}. Я вешу {dog_weight} кг.')
 
 try:
     with open("walks.json", "r", encoding="utf-8") as file:
@@ -113,26 +117,15 @@ while True:
     if choice == '1':
         date = datetime.date.today().strftime("%d.%m.%Y")
         date_time = datetime.datetime.now().strftime('%H:%M:%S')
+        time = input_positive_number('Введите длительность прогулки в минутах: ', 'Длительность должна быть > 0!', allow_float=False)
+        comment = input('Введите комментарий (можно оставить пустым): ')
+
         while True:
-            time = input('Введите длительность прогулки в минутах: ')
-            if time.isdigit():
-                time = int(time)
+            mood = input_positive_number("Оцените настроение (1-5): ", "", allow_float=False, min_value=0)
+            if 1 <= mood <= 5:
                 break
             else:
-                print('Введите корректрое число')
-        comment = input('Введите комментарий (можно оставить пустым): ')
-        
-        while True:
-            mood = input("Оцените настроение собаки от 1 до 5: ")
-            if mood.isdigit():
-                mood = int(mood)
-                if 1 <= mood <= 5:
-                    
-                    break
-                else:
-                    print('Ошибка! Введите число от 1 до 5')
-            else:
-                print('Введите число!')
+                print("Введите число от 1 до 5!")
         
         walk = {
             "date": date,
@@ -230,6 +223,3 @@ while True:
     else:
         print("Неверный пункт, введите 0-7")
 
-
-# Отладка типов
-#print(type(dog_name), type(dog_age), type(dog_weight), sep='*')
