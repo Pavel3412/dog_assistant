@@ -1,10 +1,11 @@
 ''' Консольный помощник для владельцев собак,
 Учебный проект по Python
-Версия 0.3.7'''
+Версия 0.3.8'''
 
 import datetime
 import json
 import os
+
 # Приветствие
 print("Привет, хозяин! ❤️")
 
@@ -103,12 +104,15 @@ while True:
     print('3. Сохранить историю прогулок')
     print('4. Очистить историю прогулок')
     print('5. Показать общее время записанных прогулок')
+    print('6. Показать среднее настроение за все прогулки')
+    print('7. Показать статистику за неделю')
     print('0. Выйти')
 
     choice = input('Выберите пункт из меню: ')
 
     if choice == '1':
         date = datetime.date.today().strftime("%d.%m.%Y")
+        date_time = datetime.datetime.now().strftime('%H:%M:%S')
         while True:
             time = input('Введите длительность прогулки в минутах: ')
             if time.isdigit():
@@ -132,6 +136,7 @@ while True:
         
         walk = {
             "date": date,
+            "datetime": date_time,
             "duration": time,
             "comment": comment,
             "mood": mood
@@ -144,7 +149,7 @@ while True:
             print('История пуста.')
         else:
             for walk in walks:
-                print(f"{walk['date']} | {walk['duration']} мин | Настроение: {walk['mood']}/5 | {walk['comment']}")
+                print(f"{walk['date']} | {walk['datetime']} | {walk['duration']} мин | Настроение: {walk['mood']}/5 | Комментарий: {walk['comment']}")
 
     elif choice == '3':
         with open("walks.json", "w", encoding="utf-8") as file:
@@ -164,11 +169,51 @@ while True:
         else:
             for walk in walks:
                 total_time += walk['duration']
-        total_hours = total_time // 60
-        total_minutes = total_time % 60
-        print(f'Суммарное время прогулок: {total_time} минут')
-        print(f'Суммарное время прогулок: {total_hours} часов, {total_minutes} минут')
-                
+            total_hours = total_time // 60
+            total_minutes = total_time % 60
+            print(f'Суммарное время прогулок: {total_time} минут')
+            print(f'Суммарное время прогулок: {total_hours} часов, {total_minutes} минут')
+
+    elif choice == '6':
+        moods = [walk['mood'] for walk in walks]
+        if len(moods) > 0:
+            avg_mood = sum(moods) / len(moods)
+            print (f'Среднее настроение за все прогулки: {round(avg_mood,1)}/5')
+        else:
+            print('Нет записанных прогулок')
+
+    elif choice == '7':
+        today = datetime.date.today()
+        week_ago = today - datetime.timedelta(days=7)
+        week_walks = []
+        for walk in walks:
+            walk_date = datetime.datetime.strptime(walk['date'], "%d.%m.%Y").date()
+            if week_ago < walk_date <= today:
+                week_walks.append(walk)
+
+        if week_walks != []:
+            print('Статистика за прошедшую неделю')
+            print('--------------------------------------------------------------------')
+            week_mood = [walk['mood'] for walk in week_walks]
+            avg_week_mood = sum(week_mood) / len(week_mood)
+            print (f'Среднее настроение за неделю: {round(avg_week_mood,1)}/5')
+
+            week_durations = [walk['duration'] for walk in week_walks]
+            week_time = sum(week_durations)
+            week_hours = week_time // 60
+            week_minutes = week_time % 60
+            print(f'Суммарное время прогулок за неделю: {week_hours} часов, {week_minutes} минут')
+
+            bad_walks = [walk for walk in week_walks if walk['mood'] <= 2]
+            if len(bad_walks) > 0:
+                print('Обратите внимание на эти прогулки:')
+                for walk in bad_walks:
+                    print(f"{walk['date']} | {walk['datetime']} | {walk['duration']} мин | Настроение: {walk['mood']}/5 | Комментарий: {walk['comment']}")
+            else:
+                print('Проблемных прогулок нет')
+        else:
+            print('Нет прогулок за последние 7 дней')
+        
     elif choice == '0':
 
         confirm = input("Выйти без сохранения? (y/n): ")
@@ -180,11 +225,10 @@ while True:
 
         if confirm == 'y':
             break  
-
-
-
+    
+ 
     else:
-        print("Неверный пункт, введите 1-5")
+        print("Неверный пункт, введите 0-7")
 
 
 # Отладка типов
