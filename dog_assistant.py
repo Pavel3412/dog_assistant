@@ -1,10 +1,9 @@
 ''' Консольный помощник для владельцев собак,
 Учебный проект по Python
-Версия 0.3.8'''
+Версия 0.4.0'''
 
 import datetime
 import json
-import os
 
 def input_positive_number(prompt, error, allow_float=True, min_value=0.001):
     while True:
@@ -29,6 +28,38 @@ def input_positive_number(prompt, error, allow_float=True, min_value=0.001):
             else:
                 print('Введите корректрое число')
         
+def calc_avg_mood(walks_list):
+    moods = [walk['mood'] for walk in walks_list]
+    if len(moods) > 0:
+        avg = sum(moods) / len(moods)
+        return avg
+    else:
+        return 0
+
+def calc_total_time(walks_list):
+    total_time = 0
+    if walks_list == []:
+        hours, minutes = 0, 0
+
+    else:
+        for walk in walks_list:
+            total_time += walk['duration']
+        hours = total_time // 60
+        minutes = total_time % 60
+    return (hours, minutes)
+
+def load_walks(FileName):
+    try:
+        with open(FileName, "r", encoding="utf-8") as file:
+            walks = json.load(file)
+        return walks
+    except FileNotFoundError:
+        walks = []
+        return walks
+
+def save_json(FileName, walks_list):
+    with open(FileName, "w", encoding="utf-8") as file:
+        json.dump(walks_list, file, ensure_ascii=False, indent=4)
 
 # Приветствие
 print("Привет, хозяин! ❤️")
@@ -86,20 +117,16 @@ elif lower_dog_breed in calm_breeds:
 else:
     recomendations = 'Стандартный выгул 1ч - 1.5ч'
 
-
 # Вывод информации 
 print(f'Рекомендация для породы {dog_breed}: {recomendations}')
 print(f'Привет, {owner_name}. Меня зовут {dog_name}, порода - {dog_breed}. Мне {str(dog_age)} {year}, но на человеческие мне уже {human_age}. Я вешу {dog_weight} кг.')
 
-try:
-    with open("walks.json", "r", encoding="utf-8") as file:
-        walks = json.load(file)
-    print(f"Загружено {len(walks)} прогулок")
-except FileNotFoundError:
-    walks = []
+walks = load_walks("walks.json")
+
+if walks == []:
     print('История прогулок пуста, создаем новый файл')
-
-
+else:
+    print(f"Загружено {len(walks)} прогулок")
 
 while True:
     print("\n--- МЕНЮ ---")
@@ -145,32 +172,24 @@ while True:
                 print(f"{walk['date']} | {walk['datetime']} | {walk['duration']} мин | Настроение: {walk['mood']}/5 | Комментарий: {walk['comment']}")
 
     elif choice == '3':
-        with open("walks.json", "w", encoding="utf-8") as file:
-            json.dump(walks, file, ensure_ascii=False, indent=4)
-        print('Прогулки сохранены в файл')
+        save_json("walks.json", walks)
+        print("Прогулки сохранены в файл")
 
     elif choice == '4':
         walks = []
-        with open("walks.json", "w", encoding="utf-8") as file:
-            json.dump(walks,file, ensure_ascii=False, indent=4)
+        save_json("walks.json", walks)
         print("Прогулки очищены")
     
     elif choice == '5':
-        total_time = 0
         if walks == []:
             print('Нет записанных прогулок')
         else:
-            for walk in walks:
-                total_time += walk['duration']
-            total_hours = total_time // 60
-            total_minutes = total_time % 60
-            print(f'Суммарное время прогулок: {total_time} минут')
+            total_hours, total_minutes = calc_total_time(walks)
             print(f'Суммарное время прогулок: {total_hours} часов, {total_minutes} минут')
 
     elif choice == '6':
-        moods = [walk['mood'] for walk in walks]
-        if len(moods) > 0:
-            avg_mood = sum(moods) / len(moods)
+        avg_mood = calc_avg_mood(walks)
+        if avg_mood != 0:
             print (f'Среднее настроение за все прогулки: {round(avg_mood,1)}/5')
         else:
             print('Нет записанных прогулок')
@@ -187,14 +206,10 @@ while True:
         if week_walks != []:
             print('Статистика за прошедшую неделю')
             print('--------------------------------------------------------------------')
-            week_mood = [walk['mood'] for walk in week_walks]
-            avg_week_mood = sum(week_mood) / len(week_mood)
+            avg_week_mood = calc_avg_mood(week_walks)
             print (f'Среднее настроение за неделю: {round(avg_week_mood,1)}/5')
 
-            week_durations = [walk['duration'] for walk in week_walks]
-            week_time = sum(week_durations)
-            week_hours = week_time // 60
-            week_minutes = week_time % 60
+            week_hours, week_minutes = calc_total_time(week_walks)
             print(f'Суммарное время прогулок за неделю: {week_hours} часов, {week_minutes} минут')
 
             bad_walks = [walk for walk in week_walks if walk['mood'] <= 2]
@@ -214,12 +229,9 @@ while True:
         while confirm != 'y' and confirm != 'n':
             print("Неверно. Введите y или n")
             confirm = input("Выйти без сохранения? (y/n): ")
-        
 
         if confirm == 'y':
             break  
-    
- 
     else:
         print("Неверный пункт, введите 0-7")
 
