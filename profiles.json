@@ -1,0 +1,11 @@
+[
+    {
+        "owner_name": "Павел",
+        "dog_name": "Лиса",
+        "dog_breed": "сиба-ину",
+        "dog_age": 1.6,
+        "human_age": 11.200000000000001,
+        "dog_weight": 9.6,
+        "recomendations": "Активный выгул от 2-х часов в день"
+    }
+]

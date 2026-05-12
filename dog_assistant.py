@@ -10,139 +10,17 @@ from utils import (
     calc_avg_mood,
     calc_total_time,
     load_json,
-    save_json
+    save_json,
+    get_or_create_profile,
+    get_year_word,
+    human_age
 )
 
-profiles = load_json("profiles.json")
-dog_name = input("Какая кличка у собаки: ")
-dog_name_lower = dog_name.lower()
-
-find_profile = None
+find_profile = get_or_create_profile()
 
 
-if profiles:
-    for profile in profiles:
-        if profile.get('dog_name', '').lower() == dog_name_lower:
-            print('Мы нашли ваш профиль!')
-            print(f'Рекомендация для породы {profile["dog_breed"]}: {profile["recomendations"]}')
-            print(f'Привет, {profile["owner_name"]}. Меня зовут {profile["dog_name"]}, порода - {profile["dog_breed"]}.')
-            
-            confirm = input("Это ваша собака? (y/n): ")
-            while confirm != 'y' and confirm != 'n':
-                print("Неверно. Введите y или n")
-                confirm = input("Это ваша собака? (y/n): ")
-
-            if confirm == 'y':
-                find_profile = profile
-                break
-
-# --- Если профиль НЕ найден, создаём новый ---
-if find_profile is None:
-    print('Профиль не найден, создаём новый.')
-
-    active_breeds = ["хаски", "джек-рассел-терьер", "бордер-колли", "лабрадор", "акита-ину", "сиба-ину"]
-    calm_breeds = ["мопс", "английский бульдог", "бассет-хаунд", "ши-тцу", "французский бульдог"]
-
-    owner_name = input('Как вас зовут:')
-    dog_age = input_positive_number('Сколько ей лет: ', 'Возраст не может быть отрицательным или равным 0!', allow_float=True)
-    dog_weight = input_positive_number("Сколько она весит: ", 'Вес не может быть отрицательным или равен 0!', allow_float=True)
-    dog_breed = input("Какой она породы: ")
-    lower_dog_breed = dog_breed.lower()
-
-    while True:
-        if lower_dog_breed not in active_breeds and lower_dog_breed not in calm_breeds:
-            confirm = input('К сожалению, вашей породы нет в списке. К какой категории относится ваша порода? активная, стандартная, спокойная?')
-            if confirm in ('активная', 'спокойная', 'стандартная'):
-                if confirm == 'активная':
-                    active_breeds.append(lower_dog_breed)
-                    break
-                elif confirm == 'спокойная':
-                    calm_breeds.append(lower_dog_breed)
-                    break
-                else:
-                    break
-            else:
-                print('Категория введена неверно!')
-        else:
-            break
-
-    # Вычисляем всё, что нужно для нового профиля
-    human_age = dog_age * 7
-    if 11 <= dog_age <= 19:
-        year = 'лет'
-    elif dog_age % 10 == 1:
-        year = 'год'
-    elif 2 <= dog_age % 10 <= 4:
-        year = 'года'
-    else:
-        year = 'лет'
-
-    if lower_dog_breed in active_breeds:
-        recomendations = 'Активный выгул от 2-х часов в день'
-    elif lower_dog_breed in calm_breeds:
-        recomendations = 'Спокойные прогулки по 30-40 минут'
-    else:
-        recomendations = 'Стандартный выгул 1ч - 1.5ч'
-
-    find_profile = {
-        "owner_name": owner_name,
-        "dog_name": dog_name,
-        "dog_breed": dog_breed,
-        "dog_age": dog_age,
-        "human_age": human_age,
-        "dog_weight": dog_weight,
-        "recomendations": recomendations
-    }
-    profiles.append(find_profile)
-    save_json("profiles.json", profiles)
-    print('Профиль записан')
-
-# --- Если профиль НАЙДЕН, обновляем его ---
-else:
-    print(f"Текущий возраст: {find_profile['dog_age']} лет")
-    change = input("Изменить возраст? (y/n): ")
-    while change != 'y' and change != 'n':
-        print("Неверно. Введите y или n")
-        change = input("Изменить возраст? (y/n): ")
-
-    if change == 'y':
-        dog_age = input_positive_number('Введите новый возраст: ', 'Возраст не может быть отрицательным или равным 0!', allow_float=True)
-        find_profile["dog_age"] = dog_age
-    else:
-        dog_age = find_profile["dog_age"]
-
-    print(f"Текущий вес: {find_profile['dog_weight']} кг")
-    change_weight = input("Изменить вес? (y/n): ")
-    while change_weight != 'y' and change_weight != 'n':
-        print("Неверно. Введите y или n")
-        change_weight = input("Изменить вес? (y/n): ")
-
-    if change_weight == 'y':
-        dog_weight = input_positive_number('Введите новый вес: ', 'Вес не может быть отрицательным или равен 0!', allow_float=True)
-        find_profile["dog_weight"] = dog_weight
-    else:
-        dog_weight = find_profile["dog_weight"]
-
-    # Пересчитываем human_age и year на основе (возможно) нового возраста
-    human_age = dog_age * 7
-    if 11 <= dog_age <= 19:
-        year = 'лет'
-    elif dog_age % 10 == 1:
-        year = 'год'
-    elif 2 <= dog_age % 10 <= 4:
-        year = 'года'
-    else:
-        year = 'лет'
-
-    # Обновляем эти поля в найденном профиле
-    find_profile["human_age"] = human_age
-    find_profile["dog_weight"] = dog_weight
-    save_json("profiles.json", profiles)
-    print("Данные профиля обновлены.")
-
-# --- Вывод итоговой информации (работает для ОБОИХ случаев) ---
 print(f'\nРекомендация для породы {find_profile["dog_breed"]}: {find_profile["recomendations"]}')
-print(f'Привет, {find_profile["owner_name"]}. Меня зовут {find_profile["dog_name"]}, порода - {find_profile["dog_breed"]}. Мне {find_profile["dog_age"]} {year}, но на человеческие мне уже {human_age}. Я вешу {find_profile["dog_weight"]} кг.')
+print(f'Привет, {find_profile["owner_name"]}. Меня зовут {find_profile["dog_name"]}, порода - {find_profile["dog_breed"]}. Мне {find_profile["dog_age"]} {get_year_word(find_profile["dog_age"])}, но на человеческие мне уже {human_age(find_profile["dog_age"])}. Я вешу {find_profile["dog_weight"]} кг.')
 
 
 walks = load_json("walks.json")
