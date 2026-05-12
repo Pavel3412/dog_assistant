@@ -43,15 +43,15 @@ def calc_total_time(walks_list):
         minutes = total_time % 60
     return (hours, minutes)
 
-def load_walks(FileName):
+def load_json(FileName):
     try:
         with open(FileName, "r", encoding="utf-8") as file:
-            walks = json.load(file)
-        return walks
+            data = json.load(file)
+        return data
     except FileNotFoundError:
-        walks = []
-        return walks
+        data = []
+        return data
 
-def save_json(FileName, walks_list):
+def save_json(FileName, data):
     with open(FileName, "w", encoding="utf-8") as file:
-        json.dump(walks_list, file, ensure_ascii=False, indent=4)
+        json.dump(data, file, ensure_ascii=False, indent=4)
