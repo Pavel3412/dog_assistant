@@ -1,4 +1,5 @@
 import json
+import datetime
 
 def input_positive_number(prompt, error, allow_float=True, min_value=0.001):
     while True:
@@ -66,8 +67,15 @@ def get_year_word(age):
     else:
         year = 'лет'
     return year
+
 def human_age(age):
      return age * 7
+
+def check_health_reminders(profile):
+    vaccination_date_str = profile.get("vaccination_date")
+    if vaccination_date_str is not None:
+        vaccination_date = vaccination_date_str.datetime.strptime("%d/%m/%Y")
+        time_left = vaccination_date - datetime.date.today()
 
 def get_or_create_profile():
     profiles = load_json("profiles.json")
@@ -75,6 +83,7 @@ def get_or_create_profile():
     dog_name_lower = dog_name.lower()
 
     find_profile = None
+
 
 
     if profiles:
@@ -137,7 +146,9 @@ def get_or_create_profile():
             "dog_age": dog_age,
             "human_age": human_age(dog_age),
             "dog_weight": dog_weight,
-            "recomendations": recomendations
+            "recomendations": recomendations,
+            "vaccination_date": None,
+            "parasite_date": None
         }
         profiles.append(find_profile)
         save_json("profiles.json", profiles)

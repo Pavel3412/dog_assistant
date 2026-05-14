@@ -137,4 +137,3 @@ while True:
             break  
     else:
         print("Неверный пункт, введите 0-7")
-
