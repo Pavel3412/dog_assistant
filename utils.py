@@ -73,9 +73,16 @@ def human_age(age):
 
 def check_health_reminders(profile):
     vaccination_date_str = profile.get("vaccination_date")
+    today = datetime.date.today()
     if vaccination_date_str is not None:
-        vaccination_date = vaccination_date_str.datetime.strptime("%d/%m/%Y")
-        time_left = vaccination_date - datetime.date.today()
+        vaccination_date = datetime.datetime.strptime(vaccination_date_str, "%d/%m/%Y").date()
+        days_passed = (today - vaccination_date).days
+        if days_passed > 395:
+            return print(f'\033[91m⚠️ Внимание! Пропущен срок вакцинации на {days_passed} дней!\033[0m". Срочно посетите ветеринара')
+        elif days_passed > 365:
+            return print(f"⚠️ Прошло {days_passed} дней с последней прививки. Рекомендуется посетить ветеринара.")
+    else:
+        return print(f'С прошлой вакцинации прошло {days_passed}, до вакцинации осталось {365 - days_passed}')
 
 def get_or_create_profile():
     profiles = load_json("profiles.json")
@@ -112,6 +119,7 @@ def get_or_create_profile():
         owner_name = input('Как вас зовут:')
         dog_age = input_positive_number('Сколько ей лет: ', 'Возраст не может быть отрицательным или равным 0!', allow_float=True)
         dog_weight = input_positive_number("Сколько она весит: ", 'Вес не может быть отрицательным или равен 0!', allow_float=True)
+        vaccination_date = input('Введите дату вакцинации (d/m/y). Если нет вакцинации, нажмите Enter')
         dog_breed = input("Какой она породы: ")
         lower_dog_breed = dog_breed.lower()
 
@@ -147,8 +155,8 @@ def get_or_create_profile():
             "human_age": human_age(dog_age),
             "dog_weight": dog_weight,
             "recomendations": recomendations,
-            "vaccination_date": None,
-            "parasite_date": None
+            "vaccination_date": vaccination_date
+            #"parasite_date": None
         }
         profiles.append(find_profile)
         save_json("profiles.json", profiles)

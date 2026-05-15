@@ -13,15 +13,16 @@ from utils import (
     save_json,
     get_or_create_profile,
     get_year_word,
-    human_age
+    human_age,
+    check_health_reminders
 )
 
 find_profile = get_or_create_profile()
 
 
 print(f'\nРекомендация для породы {find_profile["dog_breed"]}: {find_profile["recomendations"]}')
-print(f'Привет, {find_profile["owner_name"]}. Меня зовут {find_profile["dog_name"]}, порода - {find_profile["dog_breed"]}. Мне {find_profile["dog_age"]} {get_year_word(find_profile["dog_age"])}, но на человеческие мне уже {human_age(find_profile["dog_age"])}. Я вешу {find_profile["dog_weight"]} кг.')
-
+print(f'Привет, {find_profile["owner_name"]}. Меня зовут {find_profile["dog_name"]}, порода - {find_profile["dog_breed"]}. Мне {find_profile["dog_age"]} {get_year_word(find_profile["dog_age"])}, но на человеческие мне уже {human_age(find_profile["dog_age"])}. Я вешу {find_profile["dog_weight"]} кг. Последняя вакцинация была {find_profile["vaccination_date"]}')
+print(check_health_reminders(find_profile))
 
 walks = load_json("walks.json")
 
